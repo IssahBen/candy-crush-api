@@ -47,3 +47,8 @@ end
 
 
 gem "devise", "~> 4.9"
+
+# Gemfile
+
+gem 'simple_token_authentication', '~> 1.0' # see semver.org
+gem "byebug", "~> 11.1"
