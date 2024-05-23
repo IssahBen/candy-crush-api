@@ -30,10 +30,10 @@ class Api::V1::SessionsController < ApplicationController
 
  def destroy 
    
-    puts(current_user)
+    puts( current_user.authentication_token)
     current_user.authentication_token = Devise.friendly_token 
     current_user.save
-   
+    puts( current_user.authentication_token)
     return render json: {message:"Success"}
  end
  

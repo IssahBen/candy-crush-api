@@ -18,7 +18,7 @@ class Api::V1::RegistrationsController < Devise::RegistrationsController
 
     @user = User.create(email: email, password: password ,password_confirmation:password_confirmation)
     if @user.save
-      return  render json: @user.as_json()
+      return  render json: {token: @user.authentication_token}
     else
       return render  json: {message:@user.errors.full_messages()}.as_json()
     end

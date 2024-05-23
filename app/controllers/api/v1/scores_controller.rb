@@ -3,9 +3,18 @@ class Api::V1::ScoresController < ApplicationController
 
   # GET /scores
   def index
+    users = User.all
+    data =[]
     @scores = Score.all
+    users.each do |user|
+      dictionary = {}
+     dictionary[:email] = user.email
+     dictionary[:highestscore] = user.scores.max
+     data << dictionary
+    end 
 
-    render json: @scores
+
+    render json: data.as_json()
   end
 
   # GET /scores/1
@@ -15,12 +24,16 @@ class Api::V1::ScoresController < ApplicationController
 
   # POST /scores
   def create
-    puts
-    @score = Score.new(score_params)
+    score = params.require(:score)
+    score = score[:score]
+    user_id = current_user.id
+    @score = Score.new(score:score,user_id:user_id)
 
     if @score.save
+      puts 3
       render json: @score, status: :created
     else
+      puts 4
       render json: @score.errors, status: :unprocessable_entity
     end
   end
@@ -46,7 +59,5 @@ class Api::V1::ScoresController < ApplicationController
     end
 
     # Only allow a list of trusted parameters through.
-    def score_params
-      params.require(:score).permit(:score)
-    end
+   
 end
