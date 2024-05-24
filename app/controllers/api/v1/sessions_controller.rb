@@ -1,42 +1,43 @@
-class Api::V1::SessionsController < ApplicationController
- def new 
-     parameter= params[:user]
+# frozen_string_literal: true
 
-     password = parameter[:password]
-     email = parameter[:email]
-    
-    user =User.where(email:email).first
+module Api
+  module V1
+    class SessionsController < ApplicationController
+      def new
+        parameter = params[:user]
 
-    puts(password)
-   
-   
- 
-    if user 
-    
-        if user.valid_password?(password)
-           
-            return render json: user.as_json(only:[:id,:email,:authentication_token]),status: :created
+        password = parameter[:password]
+        email = parameter[:email]
+
+        user = User.where(email:).first
+
+        Rails.logger.debug(password)
+
+        if user
+
+          if user.valid_password?(password)
+
+            render json: user.as_json(only: %i[id email authentication_token]), status: :created
+          else
+
+            message_obj = { message: 'Wrong Password' }
+            render json: message_obj.as_json
+          end
         else
-            
-            message_obj = {message: "Wrong Password"}
-          return  render json:  message_obj.as_json()
-        end 
-    else
-        message_obj = {message:"Sign Up OR Check your email and password "}
-        render json:  message_obj.as_json()
+          message_obj = { message: 'Sign Up OR Check your email and password ' }
+          render json:  message_obj.as_json
+        end
+      end
+
+      def destroy
+        Rails.logger.debug(current_user.authentication_token)
+        current_user.authentication_token = Devise.friendly_token
+        current_user.save
+        Rails.logger.debug(current_user.authentication_token)
+        render json: { message: 'Success' }
+      end
+
+      def signup; end
     end
-
- end
-
- def destroy 
-   
-    puts( current_user.authentication_token)
-    current_user.authentication_token = Devise.friendly_token 
-    current_user.save
-    puts( current_user.authentication_token)
-    return render json: {message:"Success"}
- end
- 
- def signup
- end 
+  end
 end
